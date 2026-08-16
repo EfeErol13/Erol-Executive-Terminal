@@ -53,12 +53,12 @@
       white-space: nowrap;
     }
 
-    .ticker { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: monospace; font-size: 0.85rem; }
+    /* Fiyat Listesi */
+    .ticker { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-family: monospace; font-size: 0.85rem; }
+    .ticker:last-child { margin-bottom: 0; }
     .ticker-val { color: var(--white); }
     .up { color: var(--green); font-size: 0.75rem; }
     .down { color: var(--red); font-size: 0.75rem; }
-    .bar-bg { width: 100%; height: 2px; background: #222; margin-top: 15px; }
-    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); width: 78%; }
 
     /* Merkez Kart */
     .hero-card { grid-column: 1 / -1; background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%); border: 1px solid var(--border); padding: 35px 20px; text-align: center; border-radius: 4px; cursor: pointer; transition: 0.3s; }
@@ -115,12 +115,11 @@
       </div>
     </div>
 
-    <!-- Piyasalar -->
+    <!-- Piyasalar / Fiyatlar -->
     <div class="card">
-      <div class="card-title">VARLIK GÖSTERGELERİ</div>
+      <div class="card-title">FİYATLAR</div>
       <div class="ticker"><span>GOLD / USD</span><span class="ticker-val" id="gold-val">2,412.50 <span id="gold-diff" class="up">▲ +0.8%</span></span></div>
-      <div class="ticker"><span>GLOBAL INDEX</span><span class="ticker-val" id="idx-val">5,840.10 <span id="idx-diff" class="up">▲ +1.2%</span></span></div>
-      <div class="bar-bg"><div class="bar-fill"></div></div>
+      <div class="ticker"><span>EUR / USD</span><span class="ticker-val" id="eur-val">1.0885 <span id="eur-diff" class="up">▲ +0.2%</span></span></div>
     </div>
 
     <!-- Merkez Kimlik Kartı -->
@@ -181,13 +180,13 @@
     // Canlı Piyasalar
     setInterval(() => {
       const gDiff = (Math.random() * 2 - 0.9).toFixed(1);
-      const iDiff = (Math.random() * 2 - 0.9).toFixed(1);
+      const eDiff = (Math.random() * 0.8 - 0.35).toFixed(2);
       
       document.getElementById('gold-diff').className = gDiff >= 0 ? 'up' : 'down';
       document.getElementById('gold-diff').innerText = (gDiff >= 0 ? '▲ +' : '▼ ') + gDiff + '%';
       
-      document.getElementById('idx-diff').className = iDiff >= 0 ? 'up' : 'down';
-      document.getElementById('idx-diff').innerText = (iDiff >= 0 ? '▲ +' : '▼ ') + iDiff + '%';
+      document.getElementById('eur-diff').className = eDiff >= 0 ? 'up' : 'down';
+      document.getElementById('eur-diff').innerText = (eDiff >= 0 ? '▲ +' : '▼ ') + eDiff + '%';
     }, 2500);
 
     // Modal Kontrolleri
@@ -216,8 +215,6 @@
       for (let i = 0; i < p.length - 1; i++) {
         let xMid = (p[i].x + p[i + 1].x) / 2;
         let yMid = (p[i].y + p[i + 1].y) / 2;
-        let cpX1 = (xMid + p[i].x) / 2;
-        let cpX2 = (xMid + p[i + 1].x) / 2;
         
         path += ` Q ${p[i].x},${p[i].y} ${xMid},${yMid}`;
       }
