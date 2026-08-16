@@ -66,37 +66,29 @@
     .hero-title { font-size: 1.4rem; font-weight: 300; letter-spacing: 5px; color: var(--white); margin-bottom: 8px; }
     .hero-sub { font-size: 0.75rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
 
-    /* Gizli Servet Kartı & Sade Çizgi Grafik Paneli */
+    /* Gizli Servet Kartı */
     #vault-card { display: none; grid-column: 1 / -1; background: #111; border: 1px solid var(--gold); padding: 25px; text-align: center; border-radius: 4px; }
-    .vault-amount { font-size: 2.2rem; font-family: monospace; color: var(--gold-light); letter-spacing: 2px; margin: 10px 0; }
-    .vault-status { font-size: 0.7rem; color: var(--green); letter-spacing: 2px; font-family: monospace; margin-bottom: 10px; }
+    .vault-amount { font-size: 2.2rem; font-family: monospace; color: var(--gold-light); letter-spacing: 2px; margin: 10px 0 5px 0; }
+    .vault-status { font-size: 0.7rem; color: var(--green); letter-spacing: 2px; font-family: monospace; margin-bottom: 15px; }
     
-    /* Temiz Çizgi Grafik Konteyneri */
-    .chart-container {
-      width: 100%;
-      height: 90px;
-      margin-top: 15px;
-      position: relative;
-      background: rgba(0, 0, 0, 0.3);
+    /* Fiyatın Altında Ortalı Küçük Sarı Çizgi Grafik */
+    .mini-chart {
+      width: 220px;
+      height: 45px;
+      margin: 0 auto;
+      background: rgba(0, 0, 0, 0.4);
       border-radius: 4px;
-      border: 1px solid rgba(212, 175, 55, 0.1);
-      padding: 10px 0;
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      padding: 6px;
     }
-    .chart-container svg { width: 100%; height: 100%; overflow: visible; }
-    
-    /* Sade Çizgi ve Dolgu Stilleri */
-    .chart-line { 
-      fill: none; 
-      stroke: var(--gold); 
-      stroke-width: 2; 
-      stroke-linejoin: round;
+    .mini-chart svg { width: 100%; height: 100%; overflow: visible; }
+    .gold-line {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 2;
       stroke-linecap: round;
+      stroke-linejoin: round;
       transition: all 0.5s ease;
-    }
-    .chart-area { 
-      fill: url(#goldGradient); 
-      transition: all 0.5s ease; 
-      opacity: 0.15; 
     }
 
     /* Pop-up Şifre Paneli */
@@ -143,25 +135,16 @@
       <div class="hero-sub">PRIVATE PORTFOLIO & MANAGEMENT</div>
     </div>
 
-    <!-- Gizli Servet Paneli + Temiz Çizgi Grafik -->
+    <!-- Gizli Servet Paneli -->
     <div id="vault-card">
       <div class="card-title">ANLIK PORTFÖY DEĞERİ</div>
       <div class="vault-amount" id="portfolio-val">₺25,000.00</div>
       <div class="vault-status">• CANLI CANLI GÜNCELLENİYOR</div>
       
-      <!-- Sade SVG Çizgi Grafik (Noktasız) -->
-      <div class="chart-container">
-        <svg viewBox="0 0 300 70" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#d4af37"/>
-              <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-
-          <!-- Alan Gradyanı ve Çizgi -->
-          <path id="chart-area-path" class="chart-area" d="" />
-          <path id="chart-path" class="chart-line" d="" />
+      <!-- Fiyatın Altında Ortalı Küçük Sarı Çizgi Grafik -->
+      <div class="mini-chart">
+        <svg viewBox="0 0 200 40">
+          <path id="gold-chart-path" class="gold-line" d="M 0,20 L 33,20 L 66,20 L 100,20 L 133,20 L 166,20 L 200,20" />
         </svg>
       </div>
     </div>
@@ -223,23 +206,9 @@
       }
     }
 
-    // Yumuşak Akıcı Çizgi Hesabı
-    function createSmoothPath(points) {
-      let p = points;
-      let path = `M ${p[0].x},${p[0].y}`;
-      
-      for (let i = 0; i < p.length - 1; i++) {
-        let xMid = (p[i].x + p[i + 1].x) / 2;
-        let yMid = (p[i].y + p[i + 1].y) / 2;
-        path += ` Q ${p[i].x},${p[i].y} ${xMid},${yMid}`;
-      }
-      path += ` T ${p[p.length - 1].x},${p[p.length - 1].y}`;
-      return path;
-    }
-
-    // 20.000 TL - 30.000 TL Canlı Veri Akışı
-    let historyVals = [35, 35, 35, 35, 35, 35, 35];
-    const xCoords = [0, 50, 100, 150, 200, 250, 300];
+    // 20.000 TL - 30.000 TL Doğrudan Fiyata Orantılı Çizgi Hareketi
+    let yValues = [20, 20, 20, 20, 20, 20, 20];
+    const xValues = [0, 33, 66, 100, 133, 166, 200];
 
     function startPortfolioStream() {
       setInterval(() => {
@@ -247,21 +216,19 @@
         const formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(randomVal.toFixed(2));
         document.getElementById('portfolio-val').innerText = '₺' + formatted;
 
-        // Fiyata göre Y koordinatı (20.000 TL -> 60px, 30.000 TL -> 10px)
-        const yPos = 60 - ((randomVal - 20000) / 10000) * 50;
-        
-        historyVals.shift();
-        historyVals.push(yPos);
+        // Fiyat 30.000 TL ise Y=5 (Yukarıda), 20.000 TL ise Y=35 (Aşağıda)
+        const yPos = 35 - ((randomVal - 20000) / 10000) * 30;
 
-        const points = xCoords.map((x, i) => ({ x: x, y: historyVals[i] }));
-        
-        // Yumuşak çizgi ve gölge yolu
-        const linePath = createSmoothPath(points);
-        const areaPath = `${linePath} L 300,70 L 0,70 Z`;
+        yValues.shift();
+        yValues.push(yPos);
 
-        document.getElementById('chart-path').setAttribute('d', linePath);
-        document.getElementById('chart-area-path').setAttribute('d', areaPath);
+        // Çizgi Yolunu Oluştur
+        let pathD = `M ${xValues[0]},${yValues[0]}`;
+        for (let i = 1; i < xValues.length; i++) {
+          pathD += ` L ${xValues[i]},${yValues[i]}`;
+        }
 
+        document.getElementById('gold-chart-path').setAttribute('d', pathD);
       }, 2000);
     }
   </script>
