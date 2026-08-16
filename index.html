@@ -66,22 +66,62 @@
     .hero-title { font-size: 1.4rem; font-weight: 300; letter-spacing: 5px; color: var(--white); margin-bottom: 8px; }
     .hero-sub { font-size: 0.75rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
 
-    /* Gizli Servet Kartı & Profesyonel Grafik */
-    #vault-card { display: none; grid-column: 1 / -1; background: #111; border: 1px solid var(--gold); padding: 25px; text-align: center; border-radius: 4px; }
+    /* Gizli Servet Kartı & Modern Grafik Paneli */
+    #vault-card { display: none; grid-column: 1 / -1; background: #111; border: 1px solid var(--gold); padding: 25px; text-align: center; border-radius: 4px; position: relative; }
     .vault-amount { font-size: 2.2rem; font-family: monospace; color: var(--gold-light); letter-spacing: 2px; margin: 10px 0; }
     .vault-status { font-size: 0.7rem; color: var(--green); letter-spacing: 2px; font-family: monospace; margin-bottom: 10px; }
     
-    /* Dinamik SVG Grafiği ve Gradyan */
-    .chart-box { width: 100%; height: 100px; margin-top: 15px; position: relative; }
-    .chart-box svg { width: 100%; height: 100%; overflow: visible; }
-    .chart-line { fill: none; stroke: var(--gold); stroke-width: 2.5; transition: all 0.6s ease-in-out; }
-    .chart-area { fill: url(#goldGradient); transition: all 0.6s ease-in-out; opacity: 0.4; }
+    /* Modern SVG Grafik Tasarımı */
+    .chart-container {
+      width: 100%;
+      height: 120px;
+      margin-top: 15px;
+      position: relative;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 6px;
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      padding: 10px;
+      overflow: hidden;
+    }
+    .chart-container svg { width: 100%; height: 100%; overflow: visible; }
     
-    .pulse-dot {
-      fill: var(--gold-light);
+    /* Işıma ve Çizgi Efektleri */
+    .chart-line { 
+      fill: none; 
+      stroke: var(--gold); 
+      stroke-width: 2; 
+      transition: all 0.6s ease-in-out; 
+      filter: drop-shadow(0px 2px 8px rgba(212, 175, 55, 0.5));
+    }
+    .chart-area { 
+      fill: url(#goldGradient); 
+      transition: all 0.6s ease-in-out; 
+      opacity: 0.25; 
+    }
+    .grid-line {
+      stroke: rgba(212, 175, 55, 0.05);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+
+    /* Modern Nabız Atan Nokta */
+    .pulse-ring {
+      fill: none;
       stroke: var(--gold);
-      stroke-width: 2;
+      stroke-width: 1.5;
+      opacity: 0.8;
+      animation: pulse 2s infinite ease-out;
+    }
+    .pulse-dot-center {
+      fill: var(--gold-light);
+      stroke: #000;
+      stroke-width: 1;
       transition: all 0.6s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { r: 3px; opacity: 1; }
+      100% { r: 12px; opacity: 0; }
     }
 
     /* Pop-up Şifre Paneli */
@@ -128,24 +168,36 @@
       <div class="hero-sub">PRIVATE PORTFOLIO & MANAGEMENT</div>
     </div>
 
-    <!-- Gizli Servet Paneli + Profesyonel Kavisli Grafik -->
+    <!-- Gizli Servet Paneli + Modernize Edilmiş Grafik -->
     <div id="vault-card">
       <div class="card-title">ANLIK PORTFÖY DEĞERİ</div>
       <div class="vault-amount" id="portfolio-val">₺25,000.00</div>
       <div class="vault-status">• CANLI CANLI GÜNCELLENİYOR</div>
       
-      <!-- Kavisli Gradyanlı SVG Grafiği -->
-      <div class="chart-box">
+      <!-- Modernize Edilmiş SVG Grafik Konteyneri -->
+      <div class="chart-container">
         <svg viewBox="0 0 300 90" preserveAspectRatio="none">
           <defs>
             <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#d4af37" stop-opacity="0.8"/>
+              <stop offset="0%" stop-color="#d4af37" stop-opacity="0.9"/>
               <stop offset="100%" stop-color="#d4af37" stop-opacity="0.0"/>
             </linearGradient>
           </defs>
+
+          <!-- İnce Arka Plan Izgarası -->
+          <line x1="0" y1="22.5" x2="300" y2="22.5" class="grid-line" />
+          <line x1="0" y1="45" x2="300" y2="45" class="grid-line" />
+          <line x1="0" y1="67.5" x2="300" y2="67.5" class="grid-line" />
+
+          <!-- Alan Gradyanı ve Çizgi -->
           <path id="chart-area-path" class="chart-area" d="" />
           <path id="chart-path" class="chart-line" d="" />
-          <circle id="chart-dot" class="pulse-dot" r="4" cx="300" cy="45"/>
+          
+          <!-- Canlı Nabız Efektli Nokta -->
+          <g id="pulse-group" transform="translate(300, 45)">
+            <circle class="pulse-ring" cx="0" cy="0" />
+            <circle class="pulse-dot-center" r="3.5" cx="0" cy="0"/>
+          </g>
         </svg>
       </div>
     </div>
@@ -207,7 +259,7 @@
       }
     }
 
-    // Yumuşak Kavis Hesabı (Smooth Curve Generator)
+    // Akıcı Kavis Hesabı (Bezier Curve Generator)
     function createSmoothPath(points) {
       let p = points;
       let path = `M ${p[0].x},${p[0].y}`;
@@ -222,7 +274,7 @@
       return path;
     }
 
-    // 20.000 TL ile 30.000 TL Arası Akıcı Kavisli Grafik
+    // 20.000 TL - 30.000 TL Canlı Veri Akışı
     let historyVals = [45, 45, 45, 45, 45, 45, 45];
     const xCoords = [0, 50, 100, 150, 200, 250, 300];
 
@@ -240,17 +292,16 @@
 
         const points = xCoords.map((x, i) => ({ x: x, y: historyVals[i] }));
         
-        // Kavisli çizgi yolu
+        // Kavisli çizgi ve alan yolları
         const linePath = createSmoothPath(points);
-        // Gölge alanı yolu
         const areaPath = `${linePath} L 300,90 L 0,90 Z`;
 
         document.getElementById('chart-path').setAttribute('d', linePath);
         document.getElementById('chart-area-path').setAttribute('d', areaPath);
         
-        // Son canlı noktayı taşı
+        // Nabız noktasının pozisyonunu yumuşakça taşı
         const lastY = historyVals[historyVals.length - 1];
-        document.getElementById('chart-dot').setAttribute('cy', lastY);
+        document.getElementById('pulse-group').setAttribute('transform', `translate(300, ${lastY})`);
 
       }, 2000);
     }
