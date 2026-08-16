@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EROL EXECUTIVE TERMINAL</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card-bg: #121212;
+      --border: rgba(212, 175, 55, 0.2);
+      --gold: #d4af37;
+      --gold-light: #f3e5ab;
+      --white: #f5f5f5;
+      --gray: #666666;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--white); min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; overflow-x: hidden; }
+
+    /* Altın İnce Çizgi ve Başlık */
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+    .brand { font-size: 0.9rem; letter-spacing: 3px; font-weight: 600; color: var(--white); display: flex; align-items: center; gap: 8px; }
+    .gold-dot { width: 6px; height: 6px; background-color: var(--gold); border-radius: 50%; box-shadow: 0 0 8px var(--gold); }
+    .status { font-size: 0.75rem; color: var(--gray); font-family: monospace; letter-spacing: 1px; }
+
+    /* Izgara Düzeni */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin: 20px 0; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 4px; transition: border-color 0.3s ease; }
+    .card:hover { border-color: var(--gold); }
+    .card-title { font-size: 0.7rem; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+
+    /* Dünya Saatleri */
+    .clocks { display: flex; justify-content: space-between; }
+    .clock-item { text-align: center; }
+    .clock-time { font-size: 1.1rem; font-family: monospace; color: var(--gold-light); margin-top: 4px; }
+    .clock-label { font-size: 0.65rem; color: var(--gray); }
+
+    /* Finansal Göstergeler */
+    .ticker { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: monospace; font-size: 0.85rem; }
+    .ticker-val { color: var(--white); }
+    .up { color: var(--gold); font-size: 0.75rem; }
+
+    /* Portföy Barı */
+    .bar-bg { width: 100%; height: 2px; background: #222; margin-top: 15px; position: relative; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); width: 78%; }
+
+    /* Altın İmzalı Merkez Kart */
+    .hero-card { grid-column: 1 / -1; background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%); border: 1px solid var(--border); padding: 35px 20px; text-align: center; border-radius: 4px; }
+    .hero-title { font-size: 1.4rem; font-weight: 300; letter-spacing: 5px; color: var(--white); margin-bottom: 8px; }
+    .hero-sub { font-size: 0.75rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
+
+    /* Alt Bilgi */
+    footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border); font-size: 0.65rem; color: var(--gray); font-family: monospace; }
+    .disclaimer { letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="gold-dot"></div>
+      EROL EXECUTIVE TERMINAL
+    </div>
+    <div class="status">SYSTEM: ONLINE</div>
+  </header>
+
+  <div class="grid">
+    <!-- Dünya Saatleri -->
+    <div class="card">
+      <div class="card-title">KÜRESEL ZAMAN DİLİMLERİ</div>
+      <div class="clocks">
+        <div class="clock-item"><div class="clock-label">LONDRAN</div><div class="clock-time" id="london">--:--</div></div>
+        <div class="clock-item"><div class="clock-label">NEW YORK</div><div class="clock-time" id="ny">--:--</div></div>
+        <div class="clock-item"><div class="clock-label">TOKYO</div><div class="clock-time" id="tokyo">--:--</div></div>
+      </div>
+    </div>
+
+    <!-- Piyasalar -->
+    <div class="card">
+      <div class="card-title">VARLIK GÖSTERGELERİ</div>
+      <div class="ticker"><span>GOLD / USD</span><span class="ticker-val">2,412.50 <span class="up">+0.8%</span></span></div>
+      <div class="ticker"><span>GLOBAL INDEX</span><span class="ticker-val">5,840.10 <span class="up">+1.2%</span></span></div>
+      <div class="bar-bg"><div class="bar-fill"></div></div>
+    </div>
+
+    <!-- Merkez Kimlik Alanı -->
+    <div class="hero-card">
+      <div class="hero-title">EFE EROL</div>
+      <div class="hero-sub">PRIVATE PORTFOLIO & MANAGEMENT</div>
+    </div>
+  </div>
+
+  <footer>
+    <div>REF: 884-X9</div>
+    <div class="disclaimer">FOR ENTERTAINMENT PURPOSES ONLY</div>
+  </footer>
+
+  <script>
+    function updateClocks() {
+      const now = new Date();
+      const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+      
+      document.getElementById('london').innerText = new Intl.DateTimeFormat('en-GB', { ...options, timeZone: 'Europe/London' }).format(now);
+      document.getElementById('ny').innerText = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'America/New_York' }).format(now);
+      document.getElementById('tokyo').innerText = new Intl.DateTimeFormat('ja-JP', { ...options, timeZone: 'Asia/Tokyo' }).format(now);
+    }
+
+    updateClocks();
+    setInterval(updateClocks, 1000);
+  </script>
+</body>
+</html>
