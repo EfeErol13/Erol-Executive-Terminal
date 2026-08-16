@@ -117,7 +117,7 @@
 
   <footer>
     <div>REF: 884-X9</div>
-    <div>FOR ENTERTAINMENT PURPOSES ONLY</div>
+    <div>SECURE ENCRYPTION</div>
   </footer>
 
   <script>
@@ -140,7 +140,7 @@
 
     function checkPass() {
       const input = document.getElementById('passInput').value;
-      if (input === '1923') { // Gizli Şifre
+      if (input === '1923') {
         document.getElementById('passModal').style.display = 'none';
         document.getElementById('vault-card').style.display = 'block';
         startPortfolioStream();
@@ -153,7 +153,6 @@
     // 20.000 TL ile 30.000 TL Arası Değişen Servet Simülasyonu
     function startPortfolioStream() {
       setInterval(() => {
-        // 20000 ile 30000 arasında küsüratlı rastgele tutar
         const randomVal = (Math.random() * (30000 - 20000) + 20000).toFixed(2);
         const formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(randomVal);
         document.getElementById('portfolio-val').innerText = '₺' + formatted;
