@@ -32,11 +32,17 @@
     .card:hover { border-color: var(--gold); }
     .card-title { font-size: 0.7rem; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
 
-    /* Saatler ve Piyasalar */
-    .clocks { display: flex; justify-content: space-between; }
-    .clock-item { text-align: center; }
-    .clock-time { font-size: 1.1rem; font-family: monospace; color: var(--gold-light); margin-top: 4px; }
-    .clock-label { font-size: 0.65rem; color: var(--gray); }
+    /* Ayrıştırılmış Küresel Saatler */
+    .clocks { display: flex; justify-content: space-between; gap: 12px; width: 100%; }
+    .clock-item { 
+      flex: 1; 
+      text-align: center; 
+      padding: 6px 4px;
+      border-right: 1px solid rgba(212, 175, 55, 0.1); 
+    }
+    .clock-item:last-child { border-right: none; }
+    .clock-time { font-size: 1.15rem; font-family: monospace; color: var(--gold-light); margin-top: 6px; letter-spacing: 1px; }
+    .clock-label { font-size: 0.7rem; color: var(--gray); letter-spacing: 2px; font-weight: 500; }
 
     .ticker { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: monospace; font-size: 0.85rem; }
     .ticker-val { color: var(--white); }
@@ -51,15 +57,23 @@
     .hero-title { font-size: 1.4rem; font-weight: 300; letter-spacing: 5px; color: var(--white); margin-bottom: 8px; }
     .hero-sub { font-size: 0.75rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
 
-    /* Gizli Servet Kartı & Canlı Grafik */
+    /* Gizli Servet Kartı & Profesyonel Grafik */
     #vault-card { display: none; grid-column: 1 / -1; background: #111; border: 1px solid var(--gold); padding: 25px; text-align: center; border-radius: 4px; }
     .vault-amount { font-size: 2.2rem; font-family: monospace; color: var(--gold-light); letter-spacing: 2px; margin: 10px 0; }
-    .vault-status { font-size: 0.7rem; color: var(--green); letter-spacing: 2px; font-family: monospace; margin-bottom: 15px; }
+    .vault-status { font-size: 0.7rem; color: var(--green); letter-spacing: 2px; font-family: monospace; margin-bottom: 10px; }
     
-    /* Dinamik SVG Grafiği */
-    .chart-box { width: 100%; height: 80px; margin-top: 10px; }
+    /* Dinamik SVG Grafiği ve Gradyan */
+    .chart-box { width: 100%; height: 100px; margin-top: 15px; position: relative; }
     .chart-box svg { width: 100%; height: 100%; overflow: visible; }
-    .chart-line { fill: none; stroke: var(--gold); stroke-width: 2; transition: all 0.5s ease; }
+    .chart-line { fill: none; stroke: var(--gold); stroke-width: 2.5; transition: all 0.6s ease-in-out; }
+    .chart-area { fill: url(#goldGradient); transition: all 0.6s ease-in-out; opacity: 0.4; }
+    
+    .pulse-dot {
+      fill: var(--gold-light);
+      stroke: var(--gold);
+      stroke-width: 2;
+      transition: all 0.6s ease-in-out;
+    }
 
     /* Pop-up Şifre Paneli */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; }
@@ -106,16 +120,24 @@
       <div class="hero-sub">PRIVATE PORTFOLIO & MANAGEMENT</div>
     </div>
 
-    <!-- Gizli Servet Paneli + Canlı Grafik -->
+    <!-- Gizli Servet Paneli + Profesyonel Kavisli Grafik -->
     <div id="vault-card">
       <div class="card-title">ANLIK PORTFÖY DEĞERİ</div>
       <div class="vault-amount" id="portfolio-val">₺25,000.00</div>
       <div class="vault-status">• CANLI CANLI GÜNCELLENİYOR</div>
       
-      <!-- Fiyata Göre Değişen Dinamik Çizgi -->
+      <!-- Kavisli Gradyanlı SVG Grafiği -->
       <div class="chart-box">
-        <svg viewBox="0 0 300 80">
-          <polyline id="chart-path" class="chart-line" points="0,40 50,40 100,40 150,40 200,40 250,40 300,40"/>
+        <svg viewBox="0 0 300 90" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#d4af37" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#d4af37" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <path id="chart-area-path" class="chart-area" d="" />
+          <path id="chart-path" class="chart-line" d="" />
+          <circle id="chart-dot" class="pulse-dot" r="4" cx="300" cy="45"/>
         </svg>
       </div>
     </div>
@@ -147,7 +169,7 @@
     updateClocks();
     setInterval(updateClocks, 1000);
 
-    // Canlı Piyasalar (Gold ve Index Değişimi)
+    // Canlı Piyasalar
     setInterval(() => {
       const gDiff = (Math.random() * 2 - 0.9).toFixed(1);
       const iDiff = (Math.random() * 2 - 0.9).toFixed(1);
@@ -177,8 +199,26 @@
       }
     }
 
-    // 20.000 TL ile 30.000 TL Arası Değişen Servet ve Dinamik Grafik
-    let historyPoints = [40, 40, 40, 40, 40, 40, 40];
+    // Yumuşak Kavis Hesabı (Smooth Curve Generator)
+    function createSmoothPath(points) {
+      let p = points;
+      let path = `M ${p[0].x},${p[0].y}`;
+      
+      for (let i = 0; i < p.length - 1; i++) {
+        let xMid = (p[i].x + p[i + 1].x) / 2;
+        let yMid = (p[i].y + p[i + 1].y) / 2;
+        let cpX1 = (xMid + p[i].x) / 2;
+        let cpX2 = (xMid + p[i + 1].x) / 2;
+        
+        path += ` Q ${p[i].x},${p[i].y} ${xMid},${yMid}`;
+      }
+      path += ` T ${p[p.length - 1].x},${p[p.length - 1].y}`;
+      return path;
+    }
+
+    // 20.000 TL ile 30.000 TL Arası Akıcı Kavisli Grafik
+    let historyVals = [45, 45, 45, 45, 45, 45, 45];
+    const xCoords = [0, 50, 100, 150, 200, 250, 300];
 
     function startPortfolioStream() {
       setInterval(() => {
@@ -186,16 +226,25 @@
         const formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(randomVal.toFixed(2));
         document.getElementById('portfolio-val').innerText = '₺' + formatted;
 
-        // Fiyata göre Y eksenini hesapla (20 bin = 70px [Aşağı], 30 bin = 10px [Yukarı])
-        const yPos = 70 - ((randomVal - 20000) / 10000) * 60;
+        // Fiyata göre Y koordinatı (20.000 TL -> 75px, 30.000 TL -> 15px)
+        const yPos = 75 - ((randomVal - 20000) / 10000) * 60;
         
-        // Noktaları sola kaydır ve yeni yüksekliği ekle
-        historyPoints.shift();
-        historyPoints.push(yPos);
+        historyVals.shift();
+        historyVals.push(yPos);
 
-        // SVG Çizgi Koordinatlarını Güncelle
-        const pointsStr = `0,${historyPoints[0]} 50,${historyPoints[1]} 100,${historyPoints[2]} 150,${historyPoints[3]} 200,${historyPoints[4]} 250,${historyPoints[5]} 300,${historyPoints[6]}`;
-        document.getElementById('chart-path').setAttribute('points', pointsStr);
+        const points = xCoords.map((x, i) => ({ x: x, y: historyVals[i] }));
+        
+        // Kavisli çizgi yolu
+        const linePath = createSmoothPath(points);
+        // Gölge alanı yolu
+        const areaPath = `${linePath} L 300,90 L 0,90 Z`;
+
+        document.getElementById('chart-path').setAttribute('d', linePath);
+        document.getElementById('chart-area-path').setAttribute('d', areaPath);
+        
+        // Son canlı noktayı taşı
+        const lastY = historyVals[historyVals.length - 1];
+        document.getElementById('chart-dot').setAttribute('cy', lastY);
 
       }, 2000);
     }
