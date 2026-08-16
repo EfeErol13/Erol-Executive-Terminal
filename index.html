@@ -18,7 +18,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--white); min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; overflow-x: hidden; }
 
-    /* Altın İnce Çizgi ve Başlık */
+    /* Üst Çizgi ve Başlık */
     header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
     .brand { font-size: 0.9rem; letter-spacing: 3px; font-weight: 600; color: var(--white); display: flex; align-items: center; gap: 8px; }
     .gold-dot { width: 6px; height: 6px; background-color: var(--gold); border-radius: 50%; box-shadow: 0 0 8px var(--gold); }
@@ -30,29 +30,37 @@
     .card:hover { border-color: var(--gold); }
     .card-title { font-size: 0.7rem; color: var(--gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
 
-    /* Dünya Saatleri */
+    /* Saatler ve Piyasalar */
     .clocks { display: flex; justify-content: space-between; }
     .clock-item { text-align: center; }
     .clock-time { font-size: 1.1rem; font-family: monospace; color: var(--gold-light); margin-top: 4px; }
     .clock-label { font-size: 0.65rem; color: var(--gray); }
 
-    /* Finansal Göstergeler */
     .ticker { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: monospace; font-size: 0.85rem; }
     .ticker-val { color: var(--white); }
     .up { color: var(--gold); font-size: 0.75rem; }
-
-    /* Portföy Barı */
-    .bar-bg { width: 100%; height: 2px; background: #222; margin-top: 15px; position: relative; }
+    .bar-bg { width: 100%; height: 2px; background: #222; margin-top: 15px; }
     .bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); width: 78%; }
 
-    /* Altın İmzalı Merkez Kart */
-    .hero-card { grid-column: 1 / -1; background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%); border: 1px solid var(--border); padding: 35px 20px; text-align: center; border-radius: 4px; }
+    /* Merkez Kart */
+    .hero-card { grid-column: 1 / -1; background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%); border: 1px solid var(--border); padding: 35px 20px; text-align: center; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+    .hero-card:hover { border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.1); }
     .hero-title { font-size: 1.4rem; font-weight: 300; letter-spacing: 5px; color: var(--white); margin-bottom: 8px; }
     .hero-sub { font-size: 0.75rem; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
 
-    /* Alt Bilgi */
+    /* Gizli Servet Kartı */
+    #vault-card { display: none; grid-column: 1 / -1; background: #111; border: 1px solid var(--gold); padding: 25px; text-align: center; border-radius: 4px; }
+    .vault-amount { font-size: 2.2rem; font-family: monospace; color: var(--gold-light); letter-spacing: 2px; margin: 10px 0; }
+    .vault-status { font-size: 0.7rem; color: #00ff66; letter-spacing: 2px; font-family: monospace; }
+
+    /* Pop-up Şifre Paneli */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; }
+    .modal-box { background: #121212; border: 1px solid var(--gold); padding: 30px; text-align: center; border-radius: 6px; width: 300px; }
+    .modal-box h3 { font-size: 0.9rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 15px; }
+    .modal-box input { width: 100%; background: #000; border: 1px solid var(--border); color: var(--gold-light); padding: 10px; text-align: center; font-family: monospace; font-size: 1.2rem; outline: none; border-radius: 4px; margin-bottom: 15px; }
+    .modal-box button { width: 100%; background: var(--gold); color: #000; border: none; padding: 10px; font-weight: bold; letter-spacing: 1px; cursor: pointer; border-radius: 4px; }
+
     footer { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border); font-size: 0.65rem; color: var(--gray); font-family: monospace; }
-    .disclaimer { letter-spacing: 1px; }
   </style>
 </head>
 <body>
@@ -66,7 +74,7 @@
   </header>
 
   <div class="grid">
-    <!-- Dünya Saatleri -->
+    <!-- Saatler -->
     <div class="card">
       <div class="card-title">KÜRESEL ZAMAN DİLİMLERİ</div>
       <div class="clocks">
@@ -84,30 +92,73 @@
       <div class="bar-bg"><div class="bar-fill"></div></div>
     </div>
 
-    <!-- Merkez Kimlik Alanı -->
-    <div class="hero-card">
+    <!-- Merkez Kimlik Kartı -->
+    <div class="hero-card" onclick="openPassModal()">
       <div class="hero-title">EFE EROL</div>
       <div class="hero-sub">PRIVATE PORTFOLIO & MANAGEMENT</div>
+    </div>
+
+    <!-- Gizli Servet Paneli -->
+    <div id="vault-card">
+      <div class="card-title">ANLIK PORTFÖY DEĞERİ</div>
+      <div class="vault-amount" id="portfolio-val">₺25,000.00</div>
+      <div class="vault-status">• CANLI CANLI GÜNCELLENİYOR</div>
+    </div>
+  </div>
+
+  <!-- Şifre Paneli -->
+  <div class="modal" id="passModal">
+    <div class="modal-box">
+      <h3>VIP ERİŞİM ŞİFRESİ</h3>
+      <input type="password" id="passInput" maxlength="4" placeholder="••••">
+      <button onclick="checkPass()">ONAYLA</button>
     </div>
   </div>
 
   <footer>
     <div>REF: 884-X9</div>
-    <div class="disclaimer">FOR ENTERTAINMENT PURPOSES ONLY</div>
+    <div>FOR ENTERTAINMENT PURPOSES ONLY</div>
   </footer>
 
   <script>
+    // Saat Fonksiyonu
     function updateClocks() {
       const now = new Date();
       const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-      
       document.getElementById('london').innerText = new Intl.DateTimeFormat('en-GB', { ...options, timeZone: 'Europe/London' }).format(now);
       document.getElementById('ny').innerText = new Intl.DateTimeFormat('en-US', { ...options, timeZone: 'America/New_York' }).format(now);
       document.getElementById('tokyo').innerText = new Intl.DateTimeFormat('ja-JP', { ...options, timeZone: 'Asia/Tokyo' }).format(now);
     }
-
     updateClocks();
     setInterval(updateClocks, 1000);
+
+    // Modal Kontrolleri
+    function openPassModal() {
+      document.getElementById('passModal').style.display = 'flex';
+      document.getElementById('passInput').focus();
+    }
+
+    function checkPass() {
+      const input = document.getElementById('passInput').value;
+      if (input === '1923') { // Gizli Şifre
+        document.getElementById('passModal').style.display = 'none';
+        document.getElementById('vault-card').style.display = 'block';
+        startPortfolioStream();
+      } else {
+        alert('HATALI ŞİFRE');
+        document.getElementById('passInput').value = '';
+      }
+    }
+
+    // 20.000 TL ile 30.000 TL Arası Değişen Servet Simülasyonu
+    function startPortfolioStream() {
+      setInterval(() => {
+        // 20000 ile 30000 arasında küsüratlı rastgele tutar
+        const randomVal = (Math.random() * (30000 - 20000) + 20000).toFixed(2);
+        const formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(randomVal);
+        document.getElementById('portfolio-val').innerText = '₺' + formatted;
+      }, 2000);
+    }
   </script>
 </body>
 </html>
