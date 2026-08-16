@@ -71,7 +71,7 @@
     .vault-amount { font-size: 2.2rem; font-family: monospace; color: var(--gold-light); letter-spacing: 2px; margin: 10px 0 5px 0; }
     .vault-status { font-size: 0.7rem; color: var(--green); letter-spacing: 2px; font-family: monospace; margin-bottom: 15px; }
     
-    /* Görseldeki Gibi Sarı Zikzak Çizgi Konteyneri */
+    /* Borsa Akışlı Çizgi Grafik Konteyneri */
     .zigzag-chart {
       width: 250px;
       height: 60px;
@@ -83,14 +83,14 @@
     }
     .zigzag-chart svg { width: 100%; height: 100%; overflow: visible; }
     
-    /* İnce, Kıvrımlı Sarı Borsa Çizgisi */
+    /* Sarı Borsa Çizgisi */
     .gold-stroke {
       fill: none;
       stroke: var(--gold);
-      stroke-width: 2.2;
+      stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
-      transition: all 0.5s ease;
+      transition: stroke-dashoffset 0.5s ease-in-out;
     }
 
     /* Pop-up Şifre Paneli */
@@ -143,7 +143,7 @@
       <div class="vault-amount" id="portfolio-val">₺25,000.00</div>
       <div class="vault-status">• CANLI CANLI GÜNCELLENİYOR</div>
       
-      <!-- Fiyatın Altında Ortalı Görseldeki Gibi Çizgi Grafik -->
+      <!-- Fiyatın Altında Sabit Kayarak İlerleyen Borsa Çizgisi -->
       <div class="zigzag-chart">
         <svg viewBox="0 0 240 50">
           <path id="zigzag-line" class="gold-stroke" d="" />
@@ -208,36 +208,35 @@
       }
     }
 
-    // Görseldeki Gibi Dalgalı Borsa Çizgisi Hesaplama
+    // Sabit Koordinat Aralıkları (Soldan Sağa Akış)
     const xPoints = [0, 30, 60, 90, 120, 150, 180, 210, 240];
-    let yPoints = [35, 20, 38, 5, 40, 25, 45, 10, 25];
+    let priceHistory = [25000, 25000, 25000, 25000, 25000, 25000, 25000, 25000, 25000];
 
-    function drawChart() {
-      let d = `M ${xPoints[0]},${yPoints[0]}`;
-      for (let i = 1; i < xPoints.length; i++) {
-        d += ` L ${xPoints[i]},${yPoints[i]}`;
-      }
+    function renderChart() {
+      let d = "";
+      priceHistory.forEach((price, i) => {
+        // Fiyat Orantılama: ₺30.000 -> Y=5 (Yukarıda), ₺20.000 -> Y=45 (Aşağıda)
+        const y = 45 - ((price - 20000) / 10000) * 40;
+        d += (i === 0 ? `M ${xPoints[i]},${y}` : ` L ${xPoints[i]},${y}`);
+      });
       document.getElementById('zigzag-line').setAttribute('d', d);
     }
 
     // İlk Çizim
-    drawChart();
+    renderChart();
 
-    // 20.000 TL - 30.000 TL Arası Fiyat Akışı ve Canlı Dalgalanma
+    // 20.000 TL - 30.000 TL Borsa Veri Akışı
     function startPortfolioStream() {
       setInterval(() => {
-        const randomVal = (Math.random() * (30000 - 20000) + 20000);
-        const formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(randomVal.toFixed(2));
+        const newPrice = (Math.random() * (30000 - 20000) + 20000);
+        const formatted = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2 }).format(newPrice.toFixed(2));
         document.getElementById('portfolio-val').innerText = '₺' + formatted;
 
-        // Fiyata Göre Son Noktanın Y Yüksekliği (30.000 TL -> 5px, 20.000 TL -> 45px)
-        const targetY = 45 - ((randomVal - 20000) / 10000) * 40;
+        // Geçmiş verileri sola kaydır (En eski kaybolur, yeni fiyat en sağa eklenir)
+        priceHistory.shift();
+        priceHistory.push(newPrice);
 
-        // Çizgiyi sola kaydırıp yeni dalgayı ekle
-        yPoints.shift();
-        yPoints.push(targetY);
-
-        drawChart();
+        renderChart();
       }, 2000);
     }
   </script>
